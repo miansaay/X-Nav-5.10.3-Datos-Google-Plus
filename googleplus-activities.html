@@ -31,19 +31,20 @@
       // The provided key works for this sample only when run from
       // https://google-api-javascript-client.googlecode.com/hg/samples/authSample.html
       // To use in your own application, replace this API key with your own.
-      var apiKey = '';
+      var apiKey = 'AIzaSyA7LNwWcT-IcISn7G3Y0TkSP43IHSCMqlw';
 
       // Use a button to handle authentication the first time.
       function handleClientLoad() {
         gapi.client.setApiKey(apiKey);
         makeApiCall();
+        Activity();
       }
 
       // Load the API and make an API call.  Display the results on the screen.
       function makeApiCall() {
         gapi.client.load('plus', 'v1', function() {
           var request = gapi.client.plus.people.get({
-            'userId': ''
+            'userId': '108086881826934773478'
             // For instance: 
             // 'userId': '+GregorioRobles'
           });
@@ -53,14 +54,48 @@
             image.src = resp.image.url;
             heading.appendChild(image);
             heading.appendChild(document.createTextNode(resp.displayName));
-
+              
             document.getElementById('content').appendChild(heading);
+            
           });
         });
       }
+      function Activity() {
+        gapi.client.load('plus', 'v1', function() {
+          var request = gapi.client.plus.activities.list({
+            'userId': '108086881826934773478',
+            'collection': 'public'
+            // For instance: 
+            // 'userId': '+GregorioRobles'
+            
+          });
+          request.execute(function(resp) {
+             //console.log(resp.items);
+             //console.log(resp.items[0].title);
+             //console.log(resp.items[0].location);
+             var actividades = '<ul>'
+             for (var i = 0; i < resp.items.length; i++) {
+              
+                  if (resp.items[i].location != undefined) {
+                        actividades = actividades + '<br></br>' + '<li>Título: ' + resp.items[i].title + '</li><br>'
+                        + '<li>Coordenadas:<br></br>' +'<ul><li>latitud: ' + resp.items[i].location.position.latitude 
+                        + '</li>' +'<li>longitud: ' + resp.items[i].location.position.longitude +  '</li></ul>' + '</li><br>'; 
+                  } else {
+                        actividades = actividades + '<br></br>' + '<li>Título: ' + resp.items[i].title + '</li><br>';
+                  }           
+             }
+             actividades = actividades + '</ul>';
+             var anterior = document.getElementById('content').innerHTML;
+             document.getElementById('content').innerHTML = anterior + actividades;
+            
+          });
+        });
+      }
+      
     </script>
     <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
     <div id="content"></div>
-    <p>Retrieves your profile name (and picture) using the Google Plus API.</p>
+    <!--<p>Retrieves your profile name (and picture) using the Google Plus API.</p>-->
+
   </body>
 </html>
